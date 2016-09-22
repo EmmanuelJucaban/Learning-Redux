@@ -10,50 +10,56 @@ var stateDefault = {
 
 var nextHobbyId = 1;
 var nextMovieId = 1;
-var reducer = (state = stateDefault, action) => {
+
+var nameReducer = (state = 'Anonymous', action) => {
   switch(action.type){
     case 'CHANGE_NAME':
-      return {
-        ...state,
-        name: action.name
-      };
-    case 'ADD_HOBBY':
-      return {
-        ...state,
-        hobbies: [
-          ...state.hobbies,
-          {
-            id: nextHobbyId++,
-            hobby: action.hobby
-          }
-        ]
-      };
-    case 'ADD_MOVIE':
-      return {
-        ...state,
-        movies: [
-          ...state.movies,
-          {
-            id: nextMovieId++,
-            title: action.title,
-            genre: action.genre
-          }
-        ]
-      };
-    case 'REMOVE_HOBBY':
-      return {
-        ...state,
-        hobbies: state.hobbies.filter((hobby) => { return hobby.id !== action.id})
-      }
-    case 'REMOVE_MOVIE':
-      return {
-        ...state,
-        movies: state.movies.filter( (movie) => { return movie.id !== action.id} )
-      }
+    // State is not an object anymore
+      return action.name;
     default:
       return state;
   }
 };
+
+var hobbiesReducer = (state = [], action) => {
+  switch(action.type){
+    case 'ADD_HOBBY':
+      return [
+        ...state,
+        {
+          id: nextHobbyId++,
+          title: action.hobby
+        }
+      ];
+    case 'REMOVE_HOBBY':
+      return state.filter((hobby) => hobby.id !== action.id);
+    default:
+      return state;
+  }
+}
+
+var moviesReducer = (state = [], action) => {
+  switch(action.type){
+    case 'ADD_MOVIE':
+      return [
+        ...state,
+        {
+          id: nextMovieId++,
+          title: action.title,
+          genre: action.genre
+        }
+      ];
+    case 'REMOVE_MOVIE':
+      return state.filter( (movie) => movie.id !== action.id);
+    default:
+      return state;
+  }
+};
+var reducer = redux.combineReducers({
+  name: nameReducer,
+  hobbies: hobbiesReducer,
+  movies: moviesReducer
+});
 
 var store = redux.createStore(reducer, redux.compose(
   window.devToolsExtension ? window.devToolsExtension() : f => f
@@ -78,6 +84,7 @@ store.dispatch({
   name: 'Emmanuel'
 });
 
+
 store.dispatch({
   type: 'ADD_HOBBY',
   hobby: 'Running'
@@ -85,7 +92,7 @@ store.dispatch({
 
 store.dispatch({
   type: 'ADD_HOBBY',
-  hobby: 'Hiking'
+  hobby: 'Running'
 });
 
 store.dispatch({
@@ -94,24 +101,19 @@ store.dispatch({
 });
 
 store.dispatch({
-  type: "CHANGE_NAME",
-  name: 'Manny'
-});
-
-
-store.dispatch({
   type: 'ADD_MOVIE',
-  title: 'Matrix',
-  genre: 'Action'
+  title: 'Harry Potter',
+  genre: 'Adventure'
 });
 
 store.dispatch({
   type: 'ADD_MOVIE',
-  title: 'Terminator',
+  title: 'Fight Club',
   genre: 'Action'
 });
+
 
 store.dispatch({
   type: 'REMOVE_MOVIE',
-  id: 2
+  id: 1
 });
