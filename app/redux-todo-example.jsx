@@ -19,14 +19,34 @@ var reducer = (state = stateDefault, action) => {
   }
 };
 
-var store = redux.createStore(reducer);
+var store = redux.createStore(reducer, redux.compose(
+  window.devToolsExtension ? window.devToolsExtension() : f => f
+));
 
-var action = {
+
+store.subscribe( () => {
+  var state = store.getState();
+  console.log("Current search is ", state.searchText)
+  document.getElementById('app').innerHTML = state.searchText;
+});
+
+
+store.dispatch({
   type: 'CHANGE_SEARCH_TEXT',
   searchText: "New Search Text"
-};
+});
 
-console.log("current state", store.getState());
-store.dispatch(action)
+store.dispatch({
+  type: 'CHANGE_SEARCH_TEXT',
+  searchText: "Cat"
+});
 
-console.log('Search text should be new', store.getState());
+store.dispatch({
+  type: 'CHANGE_SEARCH_TEXT',
+  searchText: "Dog"
+});
+
+store.dispatch({
+  type: 'CHANGE_SEARCH_TEXT',
+  searchText: "Mouse"
+});
